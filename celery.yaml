@@ -1,0 +1,5 @@
+apps:
+  - name: celery
+    restart_delay: 100
+    script: celery -A src.blog.task worker -E -c 2 -Ofair -l INFO -n converse_tasks_worker --without-heartbeat --without-gossip --without-mingle
+    autorestart: true

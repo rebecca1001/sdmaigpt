@@ -1,0 +1,5 @@
+apps:
+  - name: blog_writer
+    restart_delay: 100
+    script: sh start.sh
+    autorestart: true
