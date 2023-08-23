@@ -1,9 +1,11 @@
 import time
 from typing import List
 from fastapi import HTTPException
+from src.config import Config
 import openai
 import requests
 
+leonardo_api_key = Config.LEONARDO_API_KEY
 
 class ImageController:
     def __init__(
@@ -83,7 +85,7 @@ class ImageController:
         headers = {
             "accept": "application/json",
             "content-type": "application/json",
-            "authorization": "Bearer a28981f1-3f37-4a7f-bb4e-ee46334ee732",
+            "authorization": f"Bearer {leonardo_api_key}",
         }
         response = requests.post(url, json=payload, headers=headers)
 
@@ -95,7 +97,7 @@ class ImageController:
 
         headers = {
             "accept": "application/json",
-            "authorization": "Bearer a28981f1-3f37-4a7f-bb4e-ee46334ee732",
+            "authorization": f"Bearer {leonardo_api_key}",
         }
 
         response = requests.get(url, headers=headers)

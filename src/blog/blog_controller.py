@@ -194,7 +194,11 @@ class BlogController:
 
         self.body_paragraphs = paragraphs[0]
 
-        self.conclusion = paragraphs[1]
+        if len(paragraphs) == 1:
+            self.conclusion = response.split("\n")[-1]
+        else:
+            self.conclusion = paragraphs[1]
+    
 
         self.faq = [
             {"Question": q.strip(), "Answer": a.strip()}
@@ -208,7 +212,6 @@ class BlogController:
             and self.conclusion
             and self.faq
             and self.meta_description
-            and len(self.conclusion) < 1200
         ):
             return (
                 self.body_paragraphs,
@@ -278,8 +281,8 @@ class BlogController:
             return {"message": "Error sending the blog"}
 
     def generate_images(self):
-        self.headings = re.split(r"\d+\.\s", self.outlines)[: self.number_of_images - 1]
-        self.headings = [heading.strip() for heading in self.headings if heading.strip()]
+        self.headings = re.split(r"\d+\.\s", self.outlines)
+        self.headings = [heading.strip() for heading in self.headings if heading.strip()][: self.number_of_images - 1]
 
         image_gen_obj = ImageController(
             self.improved_title,
