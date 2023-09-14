@@ -6,6 +6,7 @@ import openai
 import requests
 
 leonardo_api_key = Config.LEONARDO_API_KEY
+leonardo_model_id = Config.LEONARDO_MODEL_ID
 
 class ImageController:
     def __init__(
@@ -47,7 +48,7 @@ class ImageController:
         messages = [
             {
                 "role": "system",
-                "content": "Act as a DALLE-2 prompt generator for image generation. You will be provided with the title and resoltuion and your task is to generate brief and enhanced prompt that can guide the image generator to generate the image. Include specifications like realistic, high quality, etc. in all the prompts. I want to generate the image for my blog so adjust the prompt accordingly considering the blog title. In the prompt do not mention that it is for the blog generation. For example, Title: Introduction to python programming language\nResolution: 512 x 512\nPrompt: Generate a high-quality, realistic 512 x 512 image featuring symbolic icons related to the Python programming language, such as a python snake and a coding terminal. This image is intended to serve as an attention-grabbing introduction to a blog post about Python programming.",
+                "content": "Act as a small DALLE-2 image prompt generator for Blogs. Image prompts are the one line prompts with the details like object, angle, style and all. Make sure generated image is realistic. The image generation can focus on one thing at a time so make sure that only one scenario or object is focused. You will be provided with the title and resolution and your task is to generate brief and enhanced prompt that can guide the image generator to generate the image. Include specifications like realistic, high quality, etc. Do not mention the respective outline before the prompt. At the end of the prompt add keywords for the detail like --realistic --HD --8k --..... Do not include anything related to blog in the prompt. Follow example for better image generation prompt. For example,\nTitle: Photo of a beautiful girl wearing casual shirt.\nPrompt: photo of a beautiful girl wearing casual shirt with a hoodie and leggings, city street, messy medium hair, slim body, view from back, medium upper body shot, looking at the camera, cute smile, shallow depth of field."
             },
             {
                 "role": "user",
@@ -61,7 +62,7 @@ class ImageController:
         messages = [
             {
                 "role": "system",
-                "content": "Act as a DALLE-2 prompt generator for image generation. You will be provided with the an outline and your task is to generate detailed and enhanced prompt for outline that can guide the image generator to generate the image. The prompt must have at least 30 words. Include specifications like realistic, high quality, etc. in all the prompts. I want to generate the images for my blog so adjust the prompt accordingly. In the prompt do not mention that it is for the blog generation. These images are intended to serve as attention-grabbing images for those who read the blog.",
+                "content": "Act as a small DALLE-2 image prompt generator for Blogs. Image prompts are the one line prompts with the details like object, angle, style and all. Make sure that generated image is realistic. The image generation can focus on one thing at a time so make sure that only one scenario or object is focused. You will be provided with one outlines and its sub outlines. Generate only one image prompt for it. Do not mention the respective outline before the prompt. At the end of the prompt add keywords for the detail like --realistic --HD --8k --..... Do not include anything related to blog in the prompt. Follow example for better image generation prompt. For example,\nHeading: Photo of a handsome african american adult man.\nPrompt: photo of a handsome african american adult man, laying in bed, relaxes recline pose, resembles actor Jordan Calloway, buzz cut hair sides faded, athletic body, view from front, medium close up shot, looking directly into the camera, intense look, hazel eyes, almond colored skin, shallow depth of field.\nHeading: Create an image of a old and beautiful bridge from the front, and on the bridge, Must have several people.\nPrompt: Create an image of a old and beautiful bridge from the front, and on the bridge, Must have several people. they are talking on the bridge and they are walking front and i can see their faces, sky is Blue and sun is shining. Birds, happy people going to the town.",
             },
             {
                 "role": "user",
@@ -76,8 +77,8 @@ class ImageController:
 
         payload = {
             "prompt": prompt,
-            "negative_prompt": "cartoon, 2d, sketch, drawing, anime, open mouth, nudity, naked, nsfw, helmet, head gear, close up, blurry eyes, two heads, two faces, plastic, Deformed, blurry, bad anatomy, bad eyes, crossed eyes, disfigured, poorly drawn face, mutation, mutated, extra limb, ugly, poorly drawn hands, missing limb, blurry, floating limbs, disconnected limbs, malformed hands, blur, out of focus, long neck, long body, mutated hands and fingers, out of frame, blender, doll, cropped, low-res, close-up, poorly-drawn face, out of frame double, blurred, ugly, disfigured, too many fingers, deformed, repetitive, black and white, grainy, extra limbs, bad anatomyHigh pass filter, airbrush, zoomed, soft light, deformed, extra limbs, extra fingers, mutated hands, bad anatomy, bad proportions , blind, bad eyes, ugly eyes, dead eyes, blur, vignette, out of shot, out of focus, gaussian, closeup, monochrome, grainy, noisy, text, writing, watermark, logo, oversaturation,over saturation,over shadow",
-            "modelId": "a097c2df-8f0c-4029-ae0f-8fd349055e61",
+            "negative_prompt": "cartoon, 2d, sketch, drawing, anime, open mouth, nudity, naked, nsfw, helmet, head gear, close up, blurry eyes, two heads, two faces, plastic, Deformed, blurry, bad anatomy, bad eyes, crossed eyes, disfigured, poorly drawn face, mutation, mutated, extra limb, ugly, poorly drawn hands, missing limb, floating limbs, disconnected limbs, malformed hands, blur, out of focus, long neck, long body, mutated hands and fingers, out of frame, blender, doll, cropped, low-res, close-up, poorly-drawn face, out of frame double, blurred, ugly, too many fingers, deformed, repetitive, duplicate, black and white, grainy, extra limbs, High pass filter, airbrush, zoomed, soft light, deformed, extra fingers, mutated hands, missing legs, bad proportions , blind, bad eyes, ugly eyes, dead eyes, vignette, out of shot, gaussian, closeup, monochrome, grainy, noisy, text, writing, watermark, logo,over saturation, over shadow, [bad-hands-5] [worst quality:2], [low quality:2], [normal quality:2], low contrast",
+            "modelId": leonardo_model_id,
             "width": self.width_of_image,
             "height": self.height_of_image,
             "num_images": 1,
