@@ -26,6 +26,6 @@ def generate_task(request):
         request["version"],
     )
 
-    response = content.generate_response()
+    response = content.generate_blog()
 
     return response
