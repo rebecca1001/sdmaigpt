@@ -13,6 +13,7 @@ def generate_blog(request: QueryRequest):
     It defines the endpoint to generate the final response.
     """
     try:
+        print ('here')
         task.generate_task.delay(request.__dict__)
         return {"status": "Task is in progress!"}
 

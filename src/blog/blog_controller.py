@@ -166,7 +166,7 @@ class BlogController:
 
 
     def generate_blog(self):
-        system_prompt = SYSTEM_PROMPT.replace('NO_OF_IMAGES', self.number_of_images)
+        system_prompt = SYSTEM_PROMPT.replace('NO_OF_IMAGES', str(self.number_of_images))
         prompt = f"""
             Title: "{self.title or "[Title of the blog]"}"
             Keyword: "{self.keyword or "[Keywords of the blog]"}"
@@ -189,6 +189,8 @@ class BlogController:
             "main_image_url": self.main_image,
             "header_images_url": self.headings_images,
         }
+        print (bubble_body)
+
 
         requests.post(
             "https://rebecca-29449.bubbleapps.io/api/1.1/wf/article",

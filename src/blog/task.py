@@ -10,6 +10,7 @@ celery = Celery(
 
 @celery.task(rate_limit="1/m")
 def generate_task(request):
+    print ('generate task')
     content = BlogController(
         request["title"],
         request["keyword"],
