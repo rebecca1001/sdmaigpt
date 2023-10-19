@@ -118,7 +118,7 @@ class BlogController:
 
     def get_openai_response(self, messages):
         response = openai.ChatCompletion.create(
-            model='gpt-4-32k',
+            model='gpt-4',
             messages=messages,
             stream=True
         )
