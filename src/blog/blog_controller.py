@@ -131,12 +131,19 @@ class BlogController:
                 break
             substr = chunk["choices"][0]["delta"]["content"]
             result = result + substr
-            print (substr, end="")
+            print ('.', end="")
 
         return result
 
 
     def get_openai_full_result(self, system_prompt, prompt):
+
+        print ('_' * 100)
+        print ('get_openai_full_result')
+        print (system_prompt)
+        print (prompt)
+        print ('_' * 100)
+
         messages = [
             {
                 "role": "system",
@@ -190,6 +197,7 @@ class BlogController:
 
         META_PROMPT = """
             - Suggest a meta description based on the user provided content, make it user-friendly and with a call to action
+            - write as a plain text
             - write _THE_END_ outside of the body tag when generation is finished
         """
 
