@@ -18,15 +18,17 @@ SYSTEM_PROMPT = """
  - please generate a blog post based on user's given information. Ensure that the content is engaging, informative, and relevant to the provided keyword.
  - Use the specified tone of voice and language.
  - Include the headings as mentioned and format the blog according to the chosen format.
- - Make sure to follow the spellings format and include the specified number of images with the provided dimensions.
+ - Make sure to follow the spellings format
  - Write blog in html format and only <body> section
- - Do not include any template words/sections. inside square brackets
+ - Do not include any template words/sections inside square brackets
+ - Write LENGTH_OF_BLOG words
  - Make sure each paragraphs are more than 3 sentances
  - write _THE_END_ outside of the body tag when generation is finished
 """
 
 # - Write AI image generation prompt in alt attribute of image tag without any indicator, write IMAGE_SRC_[index_number] in image src attribute, and self close img tag
 # - Do not include more than NO_OF_IMAGES images in the entire blog
+#  and include the specified number of images with the provided dimensions.
 
 class BlogController:
     def __init__(
@@ -168,10 +170,10 @@ class BlogController:
 
     def generate_blog(self):
         system_prompt = SYSTEM_PROMPT.replace('NO_OF_IMAGES', str(self.number_of_images))
+        system_prompt = system_prompt.replace('LENGTH_OF_BLOG', str(self.length))
         prompt = f"""
-            Title: "{self.title or "[Title of the blog]"}"
-            Keyword: "{self.keyword or "[Keywords of the blog]"}"
-            Length: {self.length} words minimum
+            Title: "{self.title or "[Generate Title of the blog]"}"
+            Keyword: "{self.keyword or ""}"
             Tone of Voice: {self.tone_of_voice}
             Language: {self.language}
             Spellings Format: {self.spellings_format}
