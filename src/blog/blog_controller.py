@@ -20,12 +20,13 @@ SYSTEM_PROMPT = """
  - Include the headings as mentioned and format the blog according to the chosen format.
  - Make sure to follow the spellings format and include the specified number of images with the provided dimensions.
  - Write blog in html format and only <body> section
- - Write AI image generation prompt in alt attribute of image tag without any indicator, write IMAGE_SRC_[index_number] in image src attribute, and self close img tag
  - Do not include any template words/sections. inside square brackets
- - Do not include more than 4 images in the entire blog
  - Make sure each paragraphs are more than 3 sentances
  - write _THE_END_ outside of the body tag when generation is finished
 """
+
+# - Write AI image generation prompt in alt attribute of image tag without any indicator, write IMAGE_SRC_[index_number] in image src attribute, and self close img tag
+# - Do not include more than NO_OF_IMAGES images in the entire blog
 
 class BlogController:
     def __init__(
@@ -170,7 +171,7 @@ class BlogController:
         prompt = f"""
             Title: "{self.title or "[Title of the blog]"}"
             Keyword: "{self.keyword or "[Keywords of the blog]"}"
-            Length: {self.length} words
+            Length: {self.length} words minimum
             Tone of Voice: {self.tone_of_voice}
             Language: {self.language}
             Spellings Format: {self.spellings_format}
@@ -178,11 +179,19 @@ class BlogController:
 
         blog = self.get_openai_full_result(system_prompt, prompt)
 
+        FAQ_PROMPT = f"""Generate an FAQ of 3~5 questions based on the user provided content"""
+
+        faq = self.get_openai_full_result(FAQ_PROMPT, blog)
+
+        META_PROMPT = "Suggest a meta description based on the user provided content, make it user-friendly and with a call to action"
+
+        meta_description = self.get_openai_full_result(META_PROMPT, blog)
+
         bubble_body = {
             "seo_title": self.improved_title.strip(),
             "content": blog,
-            "frequently_asked_questions": "",
-            "meta_description": "",
+            "frequently_asked_questions": faq,
+            "meta_description": meta_description,
             "project_id": self.project_id,
             "request_word": self.title or self.keyword or self.title_and_headings,
             "heading_images_prompt": self.headings,
