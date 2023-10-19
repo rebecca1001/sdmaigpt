@@ -15,13 +15,12 @@ openai.api_key = Config.OPENAI_API_KEY
 
 
 SYSTEM_PROMPT = """
- - please generate a blog post based on user's given information. Ensure that the content is engaging, informative, and relevant to the provided keyword.
+ please generate a LENGTH_OF_BLOG words long blog post based on user's given information. Ensure that the content is engaging, informative, and relevant to the provided keyword.
  - Use the specified tone of voice and language.
  - Include the headings as mentioned and format the blog according to the chosen format.
  - Make sure to follow the spellings format
  - Write blog in html format and only <body> section
  - Do not include any template words/sections inside square brackets
- - Write LENGTH_OF_BLOG words
  - Make sure each paragraphs are more than 3 sentances
  - write _THE_END_ outside of the body tag when generation is finished
 """
