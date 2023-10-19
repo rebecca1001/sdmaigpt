@@ -181,11 +181,17 @@ class BlogController:
 
         blog = self.get_openai_full_result(system_prompt, prompt)
 
-        FAQ_PROMPT = f"""Generate an FAQ of 3~5 questions based on the user provided content"""
+        FAQ_PROMPT = f"""
+         - Generate an FAQ of 3~5 questions and answers based on the user provided content
+         - write _THE_END_ outside of the body tag when generation is finished
+        """
 
         faq = self.get_openai_full_result(FAQ_PROMPT, blog)
 
-        META_PROMPT = "Suggest a meta description based on the user provided content, make it user-friendly and with a call to action"
+        META_PROMPT = """
+            - Suggest a meta description based on the user provided content, make it user-friendly and with a call to action
+            - write _THE_END_ outside of the body tag when generation is finished
+        """
 
         meta_description = self.get_openai_full_result(META_PROMPT, blog)
 
