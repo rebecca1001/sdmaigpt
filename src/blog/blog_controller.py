@@ -2,6 +2,7 @@ import re
 import openai
 import requests
 import time
+import json
 
 from fastapi import HTTPException
 
@@ -187,9 +188,17 @@ class BlogController:
 
         blog = self.get_openai_full_result(system_prompt, prompt)
 
-        FAQ_PROMPT = f"""
+        FAQ_PROMPT = """
          - Generate an FAQ of 3~5 questions and answers based on the user provided content
          - write _THE_END_ outside of the body tag when generation is finished
+         - Output as JSON format as following
+         [
+            {
+                "QUestion": "...Question...",
+                "Answer": "...Answer..."
+            },
+            ...
+         ]
         """
 
         faq = self.get_openai_full_result(FAQ_PROMPT, blog)
@@ -205,7 +214,7 @@ class BlogController:
         bubble_body = {
             "seo_title": self.improved_title.strip(),
             "content": blog,
-            "frequently_asked_questions": faq,
+            "frequently_asked_questions": json.loads(faq),
             "meta_description": meta_description,
             "project_id": self.project_id,
             "request_word": self.title or self.keyword or self.title_and_headings,
