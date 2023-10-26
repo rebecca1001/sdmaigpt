@@ -205,7 +205,10 @@ class BlogController:
                 Return only title and nothing else.
                 Title should be between 20~100 characters and should be SEO optimized.
             """
-            title = self.get_openai_response('', title_prompt)
+            title = self.get_openai_response([{
+                "role": "user",
+                "content": title_prompt,
+            }])
             self.title = title
 
         system_prompt = SYSTEM_PROMPT.replace('NO_OF_IMAGES', str(self.number_of_images))
