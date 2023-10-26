@@ -233,7 +233,7 @@ class BlogController:
          ]
         """
 
-        faq = self.get_openai_full_result(FAQ_PROMPT, blog)
+        faq = self.get_openai_full_result(FAQ_PROMPT, blog, 10)
 
         META_PROMPT = """
             - Suggest a meta description based on the user provided content, make it user-friendly and with a call to action
@@ -241,7 +241,7 @@ class BlogController:
             - write _THE_END_ outside of the body tag when generation is finished
         """
 
-        meta_description = self.get_openai_full_result(META_PROMPT, blog)
+        meta_description = self.get_openai_full_result(META_PROMPT, blog, 10)
 
         bubble_body = {
             "seo_title": self.title.strip(),
