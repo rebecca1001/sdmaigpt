@@ -16,14 +16,15 @@ openai.api_key = Config.OPENAI_API_KEY
 
 
 SYSTEM_PROMPT = """
- please generate a LENGTH_OF_BLOG words long blog post based on user's given information. Ensure that the content is engaging, informative, and relevant to the provided keyword.
+ - please generate a blog post based on user's given information. Ensure that the content is engaging, informative, and relevant to the provided keyword.
+ - Write infinite blog in html format and only <body> section.
+ - Do not include </body> tag or any conclusion/closing section until user prompts.
+ - Do not include any template words/sections. inside square brackets.
+ - Do not include any html attributes.
  - Use the specified tone of voice and language.
  - Include the headings as mentioned and format the blog according to the chosen format.
- - Make sure to follow the spellings format
- - Write blog in html format and only <body> section
- - Do not include any template words/sections inside square brackets
- - Make sure each paragraphs are more than 3 sentances
- - write _THE_END_ outside of the body tag when generation is finished
+ - Make sure to follow the spellings format.
+ - Make sure each paragraphs are between 5~15 sentances and each sections are 1~3 paragraphs.
 """
 
 # - Write AI image generation prompt in alt attribute of image tag without any indicator, write IMAGE_SRC_[index_number] in image src attribute, and self close img tag
@@ -136,7 +137,7 @@ class BlogController:
         return result
 
 
-    def get_openai_full_result(self, system_prompt, prompt):
+    def get_openai_full_result(self, system_prompt, prompt, words_count):
 
         print ('_' * 100)
         print ('get_openai_full_result')
@@ -159,7 +160,22 @@ class BlogController:
 
         while 'THE_END' not in result:
             res = self.get_openai_response(messages)
-            messages = messages + [{ "role": "user", "content": "continue" }]
+
+            if 'THE_END' not in res:
+                res = res.replace('</body>', '')
+
+            messages = messages + [{
+                "role": "assistant",
+                "content": res
+            }]
+
+            if (len(result.split(' ')) + 300) > words_count:
+                messages = messages + [{
+                    "role": "user",
+                    "content": "write closing section. write </body> tag and write _THE_END_ at the end" 
+                }]
+            else:
+                messages = messages + [{ "role": "user", "content": "continue" }]
             result = result + res
 
         result = result.replace(r'_THE_END_', '')
@@ -176,8 +192,24 @@ class BlogController:
 
 
     def generate_blog(self):
+
+        if not self.title:
+            title_prompt = f"""
+                Write one blog title with the following information.
+
+                Keyword: "{self.keyword or ""}"
+                Tone of Voice: {self.tone_of_voice}
+                Language: {self.language}
+                Spellings Format: {self.spellings_format}
+
+                Return only title and nothing else.
+                Title should be between 20~100 characters and should be SEO optimized.
+            """
+            title = self.get_openai_response('', title_prompt)
+            self.title = title
+
         system_prompt = SYSTEM_PROMPT.replace('NO_OF_IMAGES', str(self.number_of_images))
-        system_prompt = system_prompt.replace('LENGTH_OF_BLOG', str(self.length))
+
         prompt = f"""
             Title: "{self.title or "[Generate Title of the blog]"}"
             Keyword: "{self.keyword or ""}"
@@ -186,7 +218,7 @@ class BlogController:
             Spellings Format: {self.spellings_format}
         """
 
-        blog = self.get_openai_full_result(system_prompt, prompt)
+        blog = self.get_openai_full_result(system_prompt, prompt, self.length)
 
         FAQ_PROMPT = """
          - Generate an FAQ of 3~5 questions and answers based on the user provided content
@@ -212,7 +244,7 @@ class BlogController:
         meta_description = self.get_openai_full_result(META_PROMPT, blog)
 
         bubble_body = {
-            "seo_title": self.improved_title.strip(),
+            "seo_title": self.title.strip(),
             "content": blog,
             "frequently_asked_questions": json.loads(faq),
             "meta_description": meta_description,
