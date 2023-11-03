@@ -33,7 +33,7 @@ SYSTEM_PROMPT = """
  - Write </body> tag and write _THE_END_ at the end of the entire blog generation.
  - Make sure each paragraphs are around 70 words long
 
-Here is the blog outline:
+Here is the blog outline with section and subsection titles:
 BLOG_OUTLINE
 """
 
@@ -195,15 +195,15 @@ class BlogController:
 
         if not self.title:
             title_prompt = f"""
-                Write one blog title with the following information.
+Write one blog title with the following information.
 
-                Keyword: "{self.keyword or ""}"
-                Tone of Voice: {self.tone_of_voice}
-                Language: {self.language}
-                Spellings Format: {self.spellings_format}
+Keyword: "{self.keyword or ""}"
+Tone of Voice: {self.tone_of_voice}
+Language: {self.language}
+Spellings Format: {self.spellings_format}
 
-                Return only title and nothing else.
-                Title should be between 20~100 characters and should be SEO optimized.
+Return only title and nothing else.
+Title should be between 20~100 characters and should be SEO optimized.
             """
             title = self.get_openai_response([{
                 "role": "user",
@@ -212,11 +212,11 @@ class BlogController:
             self.title = title
 
         prompt = f"""
-            Title: "{self.title or "[Generate Title of the blog]"}"
-            Keyword: "{self.keyword or ""}"
-            Tone of Voice: {self.tone_of_voice}
-            Language: {self.language}
-            Spellings Format: {self.spellings_format}
+Title: "{self.title or "[Generate Title of the blog]"}"
+Keyword: "{self.keyword or ""}"
+Tone of Voice: {self.tone_of_voice}
+Language: {self.language}
+Spellings Format: {self.spellings_format}
         """
 
         outline_prompt = OUTLINE_GENERATE_PROMPT.replace('BLOG_SUBSECTION_COUNT', str(int(self.length / 70)))
@@ -238,24 +238,24 @@ class BlogController:
         blog = self.get_openai_full_result(system_prompt, "Generate")
 
         FAQ_PROMPT = """
-         - Generate an FAQ of 3~5 questions and answers based on the user provided content
-         - write _THE_END_ outside of the body tag when generation is finished
-         - Output as JSON format as following
-         [
-            {
-                "QUestion": "...Question...",
-                "Answer": "...Answer..."
-            },
-            ...
-         ]
+- Generate an FAQ of 3~5 questions and answers based on the user provided content
+- write _THE_END_ outside of the body tag when generation is finished
+- Output as JSON format as following
+[
+{
+    "QUestion": "...Question...",
+    "Answer": "...Answer..."
+},
+...
+]
         """
 
         faq = self.get_openai_full_result(FAQ_PROMPT, blog)
 
         META_PROMPT = """
-            - Suggest a meta description based on the user provided content, make it user-friendly and with a call to action
-            - write as a plain text
-            - write _THE_END_ outside of the body tag when generation is finished
+- Suggest a meta description based on the user provided content, make it user-friendly and with a call to action
+- write as a plain text
+- write _THE_END_ outside of the body tag when generation is finished
         """
 
         meta_description = self.get_openai_full_result(META_PROMPT, blog)
