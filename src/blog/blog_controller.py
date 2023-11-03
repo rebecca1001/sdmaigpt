@@ -26,6 +26,7 @@ Blog title
 "BLOG_TITLE"
 
  - Generate a blog post based on the provided outline. Ensure that the content is engaging, informative, and relevant to the provided keyword.
+ - Make sure to generate content for both sections and subsections.
  - Write blog in html format and only <body> section.
  - Write the blog title in <h1> tag at the beginning.
  - Do not include any template words/sections. inside square brackets.
