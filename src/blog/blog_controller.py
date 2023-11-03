@@ -19,7 +19,7 @@ OUTLINE_GENERATE_PROMPT = """
 Generate blog post outline with user provided information. 
 Make sure to only output outline and nothing else. 
 
-Each sections will be around 100~150 words, and the entire blog should be around BLOG_WORD_LENGTH words long.
+Each sections will be around 50~100 words, and the entire blog should be around BLOG_WORD_LENGTH words long.
 Generate correct number of  sections and sub sections.
 Do not indicate number of words within outline section titles. 
 """
@@ -214,6 +214,9 @@ class BlogController:
             self.title = title
 
         outline_prompt = OUTLINE_GENERATE_PROMPT.replace('BLOG_WORD_LENGTH', str(self.length))
+
+        print ('_' * 100)
+        print (outline_prompt)
 
         prompt = f"""
             Title: "{self.title or "[Generate Title of the blog]"}"
