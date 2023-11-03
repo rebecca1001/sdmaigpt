@@ -31,7 +31,7 @@ SYSTEM_PROMPT = """
  - Include the headings as mentioned and format the blog according to the chosen format.
  - Make sure to follow the spellings format.
  - Write </body> tag and write _THE_END_ at the end of the entire blog generation.
- - Make sure each paragraphs are around 70 words long
+ - Make sure each subsection paragraphs are around 70 words long with 5~10 sentances.
 
 Here is the blog outline with section and subsection titles:
 BLOG_OUTLINE
