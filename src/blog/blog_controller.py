@@ -18,10 +18,13 @@ openai.api_key = Config.OPENAI_API_KEY
 OUTLINE_GENERATE_PROMPT = """
 Generate blog post outline with section and subsection titles.
 Make sure to only output outline and nothing else. 
-Generate BLOG_SECTION_COUNT sections in total.
+Generate BLOG_SUBSECTION_COUNT subsections in total.
 """
 
 SYSTEM_PROMPT = """
+Blog title
+"BLOG_TITLE"
+
  - Generate a blog post based on the provided outline. Ensure that the content is engaging, informative, and relevant to the provided keyword.
  - Write blog in html format and only <body> section.
  - Write the blog title in <h1> tag at the beginning.
@@ -33,10 +36,7 @@ SYSTEM_PROMPT = """
  - Write </body> tag and write _THE_END_ at the end of the entire blog generation.
  - Each <p> tag content must be around 70 words long with 5~10 sentances.
 
-Here is the blog title
-BLOG_TITLE
-
-And here is the blog outline with section and subsection titles:
+Here is the blog outline with section and subsection titles:
 BLOG_OUTLINE
 
 
@@ -225,7 +225,7 @@ Language: {self.language}
 Spellings Format: {self.spellings_format}
         """
 
-        outline_prompt = OUTLINE_GENERATE_PROMPT.replace('BLOG_SECTION_COUNT', str(int(self.length / 150)))
+        outline_prompt = OUTLINE_GENERATE_PROMPT.replace('BLOG_SUBSECTION_COUNT', str(int(self.length / 70)))
         outline_prompt = outline_prompt + prompt
 
         print ('_' * 100)
