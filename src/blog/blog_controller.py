@@ -15,21 +15,29 @@ leonardo_model_id = Config.LEONARDO_MODEL_ID
 openai.api_key = Config.OPENAI_API_KEY
 
 
+OUTLINE_GENERATE_PROMPT = """
+Generate blog post outline with user provided information. 
+Make sure to only output outline and nothing else. 
+
+Each sections will be around 100~150 words, and the entire blog should be around BLOG_WORD_LENGTH words long.
+Generate correct number of  sections and sub sections.
+Do not indicate number of words within outline section titles. 
+"""
+
 SYSTEM_PROMPT = """
- - please generate a blog post based on user's given information. Ensure that the content is engaging, informative, and relevant to the provided keyword.
- - Write infinite blog in html format and only <body> section.
- - Do not include </body> tag or any conclusion/closing section until user prompts.
+ - Generate a blog post based on the provided outline. Ensure that the content is engaging, informative, and relevant to the provided keyword.
+ - Write blog in html format and only <body> section.
  - Do not include any template words/sections. inside square brackets.
  - Do not include any html attributes.
  - Use the specified tone of voice and language.
  - Include the headings as mentioned and format the blog according to the chosen format.
  - Make sure to follow the spellings format.
+ - Write </body> tag and write _THE_END_ at the end.
  - Make sure each paragraphs are between 5~15 sentances and each sections are 1~3 paragraphs.
-"""
 
-# - Write AI image generation prompt in alt attribute of image tag without any indicator, write IMAGE_SRC_[index_number] in image src attribute, and self close img tag
-# - Do not include more than NO_OF_IMAGES images in the entire blog
-#  and include the specified number of images with the provided dimensions.
+Here is the blog outline:
+BLOG_OUTLINE
+"""
 
 class BlogController:
     def __init__(
@@ -132,12 +140,12 @@ class BlogController:
                 break
             substr = chunk["choices"][0]["delta"]["content"]
             result = result + substr
-            print ('.', end="")
+            print (substr, end="")
 
         return result
 
 
-    def get_openai_full_result(self, system_prompt, prompt, words_count):
+    def get_openai_full_result(self, system_prompt, prompt):
 
         print ('_' * 100)
         print ('get_openai_full_result')
@@ -169,13 +177,7 @@ class BlogController:
                 "content": res
             }]
 
-            if (len(result.split(' ')) + 300) > words_count:
-                messages = messages + [{
-                    "role": "user",
-                    "content": "write closing section. write </body> tag and write _THE_END_ at the end" 
-                }]
-            else:
-                messages = messages + [{ "role": "user", "content": "continue" }]
+            messages = messages + [{ "role": "user", "content": "continue" }]
             result = result + res
 
         result = result.replace(r'_THE_END_', '')
@@ -211,7 +213,7 @@ class BlogController:
             }])
             self.title = title
 
-        system_prompt = SYSTEM_PROMPT.replace('NO_OF_IMAGES', str(self.number_of_images))
+        outline_prompt = OUTLINE_GENERATE_PROMPT.replace('BLOG_WORD_LENGTH', str(self.length))
 
         prompt = f"""
             Title: "{self.title or "[Generate Title of the blog]"}"
@@ -221,7 +223,17 @@ class BlogController:
             Spellings Format: {self.spellings_format}
         """
 
-        blog = self.get_openai_full_result(system_prompt, prompt, self.length)
+        outline = self.get_openai_response([{
+            "role": "system",
+            "content": outline_prompt
+        }, {
+            "role": "user",
+            "content": prompt
+        }])
+
+        system_prompt = SYSTEM_PROMPT.replace('BLOG_OUTLINE', outline)
+
+        blog = self.get_openai_full_result(system_prompt, "Generate")
 
         FAQ_PROMPT = """
          - Generate an FAQ of 3~5 questions and answers based on the user provided content
@@ -236,7 +248,7 @@ class BlogController:
          ]
         """
 
-        faq = self.get_openai_full_result(FAQ_PROMPT, blog, 10)
+        faq = self.get_openai_full_result(FAQ_PROMPT, blog)
 
         META_PROMPT = """
             - Suggest a meta description based on the user provided content, make it user-friendly and with a call to action
@@ -244,7 +256,7 @@ class BlogController:
             - write _THE_END_ outside of the body tag when generation is finished
         """
 
-        meta_description = self.get_openai_full_result(META_PROMPT, blog, 10)
+        meta_description = self.get_openai_full_result(META_PROMPT, blog)
 
         bubble_body = {
             "seo_title": self.title.strip(),
