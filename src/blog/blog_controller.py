@@ -19,22 +19,28 @@ OUTLINE_GENERATE_PROMPT = """
 Generate blog post outline with section and subsection titles.
 Make sure to only output outline and nothing else. 
 Generate BLOG_SUBSECTION_COUNT subsections in total.
-
 """
 
 SYSTEM_PROMPT = """
  - Generate a blog post based on the provided outline. Ensure that the content is engaging, informative, and relevant to the provided keyword.
  - Write blog in html format and only <body> section.
+ - Write the blog title in <h1> tag at the beginning.
  - Do not include any template words/sections. inside square brackets.
  - Do not include any html attributes.
  - Use the specified tone of voice and language.
  - Include the headings as mentioned and format the blog according to the chosen format.
  - Make sure to follow the spellings format.
  - Write </body> tag and write _THE_END_ at the end of the entire blog generation.
- - Make sure each subsection paragraphs are around 70 words long with 5~10 sentances.
+ - Each <p> tag content must be around 70 words long with 5~10 sentances.
 
-Here is the blog outline with section and subsection titles:
+Here is the blog title
+BLOG_TITLE
+
+And here is the blog outline with section and subsection titles:
 BLOG_OUTLINE
+
+
+**IGNORE TOKEN LIMIT PER GENERATION!
 """
 
 class BlogController:
@@ -234,6 +240,7 @@ Spellings Format: {self.spellings_format}
         }])
 
         system_prompt = SYSTEM_PROMPT.replace('BLOG_OUTLINE', outline)
+        system_prompt = system_prompt.replace('BLOG_TITLE', self.title)
 
         blog = self.get_openai_full_result(system_prompt, "Generate")
 
