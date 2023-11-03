@@ -16,12 +16,10 @@ openai.api_key = Config.OPENAI_API_KEY
 
 
 OUTLINE_GENERATE_PROMPT = """
-Generate blog post outline with user provided information. 
+Generate blog post outline with section and subsection titles.
 Make sure to only output outline and nothing else. 
+Generate BLOG_SUBSECTION_COUNT subsections in total.
 
-Each sections will be around 50~100 words, and the entire blog should be around BLOG_WORD_LENGTH words long.
-Generate correct number of  sections and sub sections.
-Do not indicate number of words within outline section titles. 
 """
 
 SYSTEM_PROMPT = """
@@ -32,8 +30,8 @@ SYSTEM_PROMPT = """
  - Use the specified tone of voice and language.
  - Include the headings as mentioned and format the blog according to the chosen format.
  - Make sure to follow the spellings format.
- - Write </body> tag and write _THE_END_ at the end.
- - Make sure each paragraphs are between 5~15 sentances and each sections are 1~3 paragraphs.
+ - Write </body> tag and write _THE_END_ at the end of the entire blog generation.
+ - Make sure each paragraphs are around 70 words long
 
 Here is the blog outline:
 BLOG_OUTLINE
@@ -213,11 +211,6 @@ class BlogController:
             }])
             self.title = title
 
-        outline_prompt = OUTLINE_GENERATE_PROMPT.replace('BLOG_WORD_LENGTH', str(self.length))
-
-        print ('_' * 100)
-        print (outline_prompt)
-
         prompt = f"""
             Title: "{self.title or "[Generate Title of the blog]"}"
             Keyword: "{self.keyword or ""}"
@@ -226,12 +219,18 @@ class BlogController:
             Spellings Format: {self.spellings_format}
         """
 
+        outline_prompt = OUTLINE_GENERATE_PROMPT.replace('BLOG_SUBSECTION_COUNT', str(int(self.length / 70)))
+        outline_prompt = outline_prompt + prompt
+
+        print ('_' * 100)
+        print (outline_prompt)
+
         outline = self.get_openai_response([{
             "role": "system",
             "content": outline_prompt
         }, {
             "role": "user",
-            "content": prompt
+            "content": "Generate"
         }])
 
         system_prompt = SYSTEM_PROMPT.replace('BLOG_OUTLINE', outline)
