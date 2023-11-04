@@ -35,7 +35,7 @@ Blog title
  - Include the headings as mentioned and format the blog according to the chosen format.
  - Make sure to follow the spellings format.
  - Write </body> tag and write _THE_END_ at the end of the entire blog generation.
- - Each subsection content must be around 70 words long with 5~10 sentances.
+ - Each subsection content must include 5~10 <p> tags
 
 Here is the blog outline with section and subsection titles:
 BLOG_OUTLINE
