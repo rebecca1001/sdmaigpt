@@ -33,7 +33,7 @@ Blog title
  - Do not include any html attributes.
  - Use the specified tone of voice and language.
  - Include the headings as mentioned and format the blog according to the chosen format.
- - Include 5~10 paragraphs for each subsection.
+ - Include 10~15 paragraphs for each subsection.
  - Make sure to follow the spellings format.
  - Write </body> tag and write _THE_END_ at the end of the entire blog generation.
 
@@ -226,7 +226,7 @@ Language: {self.language}
 Spellings Format: {self.spellings_format}
         """
 
-        outline_prompt = OUTLINE_GENERATE_PROMPT.replace('BLOG_SUBSECTION_COUNT', str(int(self.length / 70)))
+        outline_prompt = OUTLINE_GENERATE_PROMPT.replace('BLOG_SUBSECTION_COUNT', str(int(self.length / 200)))
         outline_prompt = outline_prompt + prompt
 
         print ('_' * 100)
