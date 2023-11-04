@@ -33,9 +33,9 @@ Blog title
  - Do not include any html attributes.
  - Use the specified tone of voice and language.
  - Include the headings as mentioned and format the blog according to the chosen format.
+ - Include 5~10 paragraphs for each subsection.
  - Make sure to follow the spellings format.
  - Write </body> tag and write _THE_END_ at the end of the entire blog generation.
- - Each subsection content must include 5~10 <p> tags
 
 Here is the blog outline with section and subsection titles:
 BLOG_OUTLINE
