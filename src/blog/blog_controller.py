@@ -31,7 +31,7 @@ Write The article In Your Own Words Rather Than Copying And Pasting From Other S
 Write In A Conversational Style As Written By A Human (Use An Informal Tone, Utilize Personal Pronouns, Keep It Simple, Engage The Reader, Use The Active Voice, Keep It Brief, Use Rhetorical Questions, and Incorporate Analogies And Metaphors).
 End with a conclusion paragraph
 
-Output format:
+Please follow this output format:
  - Write blog content in html format and only <body> section.
  - Do not include any template words/sections.
  - Do not include any html attributes.
