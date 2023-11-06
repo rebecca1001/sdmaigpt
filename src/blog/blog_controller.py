@@ -22,26 +22,20 @@ Generate BLOG_SUBSECTION_COUNT subsections in total.
 """
 
 SYSTEM_PROMPT = """
-Blog title
-"BLOG_TITLE"
+I Want You To Act As A Content Writer Very Proficient SEO Writer Writes Fluent English.
+First, Create a Table. In the table, write the article outline, including at least 15 headings and subheadings. Ensure the blog title is the only title in H1, and the subheadings must be H2 or H3 only.
+Now, let's proceed to write the article, heading by heading. Do not ignore: When writing the article, write the headings using Markdown language and ensure the headings are the same H tags as the article outline in the first table.
+Due to the limitation on the length of the text that you can generate at one time, start by writing the first sections of the article and then immediately continue with the subsequent sections in the following responses without asking.
+Write a detailed and comprehensive 2000-word 100% Unique, SEO-optimized, Human-Written article in English that covers the topic provided in the Prompt. Use fully detailed paragraphs that engage the reader, writing 400 - 500 words after each heading and subheading.
+Write The article In Your Own Words Rather Than Copying And Pasting From Other Sources. Consider perplexity and burstiness when creating content, ensuring high levels of both without losing specificity or context.
+Write In A Conversational Style As Written By A Human (Use An Informal Tone, Utilize Personal Pronouns, Keep It Simple, Engage The Reader, Use The Active Voice, Keep It Brief, Use Rhetorical Questions, and Incorporate Analogies And Metaphors).
+End with a conclusion paragraph
 
- - Generate a blog post based on the provided outline. Ensure that the content is engaging, informative, and relevant to the provided keyword.
- - Make sure to generate content for both sections and subsections.
- - Write blog in html format and only <body> section.
- - Write the blog title in <h1> tag at the beginning.
- - Do not include any template words/sections. inside square brackets.
+Output format:
+ - Write blog content in html format and only <body> section.
+ - Do not include any template words/sections.
  - Do not include any html attributes.
- - Use the specified tone of voice and language.
- - Include the headings as mentioned and format the blog according to the chosen format.
- - write at least 10 <p> tags within each <h3> tag.
- - Make sure to follow the spellings format.
  - Write </body> tag and write _THE_END_ at the end of the entire blog generation.
-
-Here is the blog outline with section and subsection titles:
-BLOG_OUTLINE
-
-
-**IGNORE TOKEN LIMIT PER GENERATION!
 """
 
 class BlogController:
@@ -219,34 +213,15 @@ Title should be between 20~100 characters and should be SEO optimized.
             self.title = title
 
         prompt = f"""
-Title: "{self.title or "[Generate Title of the blog]"}"
-Keyword: "{self.keyword or ""}"
-Tone of Voice: {self.tone_of_voice}
-Language: {self.language}
-Spellings Format: {self.spellings_format}
+Now Write An Article On This Topic "{self.title or self.keyword}"
         """
 
-        outline_prompt = OUTLINE_GENERATE_PROMPT.replace('BLOG_SUBSECTION_COUNT', str(int(self.length / 200)))
-        outline_prompt = outline_prompt + prompt
+        system_prompt = SYSTEM_PROMPT.replace('BLOG_TITLE', self.title)
 
-        print ('_' * 100)
-        print (outline_prompt)
-
-        outline = self.get_openai_response([{
-            "role": "system",
-            "content": outline_prompt
-        }, {
-            "role": "user",
-            "content": "Generate"
-        }])
-
-        system_prompt = SYSTEM_PROMPT.replace('BLOG_OUTLINE', outline)
-        system_prompt = system_prompt.replace('BLOG_TITLE', self.title)
-
-        blog = self.get_openai_full_result(system_prompt, "Generate")
+        blog = self.get_openai_full_result(system_prompt, prompt)
 
         FAQ_PROMPT = """
-- Generate an FAQ of 3~5 questions and answers based on the user provided content
+- Generate an FAQ of 5 questions and answers based on the user provided content
 - write _THE_END_ outside of the body tag when generation is finished
 - Output as JSON format as following
 [
