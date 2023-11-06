@@ -219,7 +219,7 @@ Now Write An Article On This Topic "{self.title or self.keyword}"
 
         system_prompt = SYSTEM_PROMPT.replace('BLOG_TITLE', self.title)
 
-        blog = self.get_openai_full_result(system_prompt, prompt)
+        blog = self.get_openai_full_result("", system_prompt + prompt)
 
         FAQ_PROMPT = """
 - Generate an FAQ of 5 questions and answers based on the user provided content
