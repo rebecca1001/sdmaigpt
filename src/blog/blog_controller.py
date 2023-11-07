@@ -221,6 +221,8 @@ Now Write An Article On This Topic "{self.title or self.keyword}"
 
         blog = self.get_openai_full_result("", system_prompt + prompt)
 
+        blog = '<body' + blog.split('<body')[1]
+
         FAQ_PROMPT = """
 - Generate an FAQ of 5 questions and answers based on the user provided content
 - write _THE_END_ outside of the body tag when generation is finished
@@ -237,6 +239,7 @@ Now Write An Article On This Topic "{self.title or self.keyword}"
         faq = self.get_openai_full_result(FAQ_PROMPT, blog)
 
         META_PROMPT = """
+Act as a copywriter and write a clickbait meta description of a minimum of 150 characters for the following topic and the description must not exceed 160 characters.
 - Suggest a meta description based on the user provided content, make it user-friendly and with a call to action
 - write as a plain text
 - write _THE_END_ outside of the body tag when generation is finished
