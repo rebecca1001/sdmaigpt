@@ -34,7 +34,7 @@ End with a conclusion paragraph
 Please follow this output format:
  - Write article outline plain text table output.
  - Write blog content in html format within <body> tag and use only <body>, <h1>, <h2>, <h3>, <p> tags.
- - Do not include any template words/sections.
+ - Do not include any template or placeholder content.
  - Do not include any html attributes.
  - Write </body> tag and write _THE_END_ at the end of the entire blog generation.
 """
