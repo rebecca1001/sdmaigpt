@@ -145,7 +145,6 @@ class BlogController:
 
 
     def get_openai_full_result(self, system_prompt, prompt):
-        try:
 
             print ('_' * 100)
             print ('get_openai_full_result')
@@ -193,7 +192,8 @@ class BlogController:
             return result
 
 
-        def generate_blog(self):
+    def generate_blog(self):
+        try:
 
             if not self.title:
                 title_prompt = f"""
