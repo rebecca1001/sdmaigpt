@@ -145,57 +145,58 @@ class BlogController:
 
 
     def get_openai_full_result(self, system_prompt, prompt):
+        try:
 
-        print ('_' * 100)
-        print ('get_openai_full_result')
-        print (system_prompt)
-        print (prompt)
-        print ('_' * 100)
+            print ('_' * 100)
+            print ('get_openai_full_result')
+            print (system_prompt)
+            print (prompt)
+            print ('_' * 100)
 
-        messages = [
-            {
-                "role": "system",
-                "content": system_prompt
-            },
-            {
-                "role": "user",
-                "content": prompt,
-            },
-        ]
+            messages = [
+                {
+                    "role": "system",
+                    "content": system_prompt
+                },
+                {
+                    "role": "user",
+                    "content": prompt,
+                },
+            ]
 
-        result = ''
+            result = ''
 
-        while 'THE_END' not in result:
-            res = self.get_openai_response(messages)
+            while 'THE_END' not in result:
+                res = self.get_openai_response(messages)
 
-            if 'THE_END' not in res:
-                res = res.replace('</body>', '')
+                if 'THE_END' not in res:
+                    res = res.replace('</body>', '')
 
-            messages = messages + [{
-                "role": "assistant",
-                "content": res
-            }]
+                messages = messages + [{
+                    "role": "assistant",
+                    "content": res
+                }]
 
-            messages = messages + [{ "role": "user", "content": "continue" }]
-            result = result + res
+                messages = messages + [{ "role": "user", "content": "continue" }]
+                result = result + res
 
-        result = result.replace(r'_THE_END_', '')
+            result = result.replace(r'_THE_END_', '')
 
-        img_entries = re.findall('<img.*src="(IMAGE_SRC_\d?)".*alt="(.+?)".*\/?>', result)
+            img_entries = re.findall('<img.*src="(IMAGE_SRC_\d?)".*alt="(.+?)".*\/?>', result)
 
-        for item in img_entries:
-            print ('generating image', item[1])
-            img_link = self.generate_image(item[1])
-            print (img_link)
-            result = result.replace(item[0], img_link)
+            for item in img_entries:
+                print ('generating image', item[1])
+                img_link = self.generate_image(item[1])
+                print (img_link)
+                result = result.replace(item[0], img_link)
 
-        return result
+            return result
 
 
-    def generate_blog(self):
+        def generate_blog(self):
 
-        if not self.title:
-            title_prompt = f"""
+            if not self.title:
+                title_prompt = f"""
 Write one blog title with the following information.
 
 Keyword: "{self.keyword or ""}"
@@ -205,24 +206,24 @@ Spellings Format: {self.spellings_format}
 
 Return only title and nothing else.
 Title should be between 20~100 characters and should be SEO optimized.
+                """
+                title = self.get_openai_response([{
+                    "role": "user",
+                    "content": title_prompt,
+                }])
+                self.title = title
+
+            prompt = f"""
+    Now Write An Article On This Topic "{self.title or self.keyword}"
             """
-            title = self.get_openai_response([{
-                "role": "user",
-                "content": title_prompt,
-            }])
-            self.title = title
 
-        prompt = f"""
-Now Write An Article On This Topic "{self.title or self.keyword}"
-        """
+            system_prompt = SYSTEM_PROMPT.replace('BLOG_TITLE', self.title)
 
-        system_prompt = SYSTEM_PROMPT.replace('BLOG_TITLE', self.title)
+            blog = self.get_openai_full_result("", system_prompt + prompt)
 
-        blog = self.get_openai_full_result("", system_prompt + prompt)
+            blog = '<body' + blog.split('<body')[-1]
 
-        blog = '<body' + blog.split('<body')[-1]
-
-        FAQ_PROMPT = """
+            FAQ_PROMPT = """
 - Generate an FAQ of 5 questions and answers based on the user provided content
 - write _THE_END_ outside of the body tag when generation is finished
 - Output as JSON format as following
@@ -233,40 +234,50 @@ Now Write An Article On This Topic "{self.title or self.keyword}"
 },
 ...
 ]
-        """
+            """
 
-        faq = self.get_openai_full_result(FAQ_PROMPT, blog)
+            faq = self.get_openai_full_result(FAQ_PROMPT, blog)
 
-        META_PROMPT = """
+            META_PROMPT = """
 Act as a copywriter and write a clickbait meta description of a minimum of 150 characters for the following topic and the description must not exceed 160 characters.
 - Suggest a meta description based on the user provided content, make it user-friendly and with a call to action
 - write as a plain text
 - write _THE_END_ outside of the body tag when generation is finished
-        """
+            """
 
-        meta_description = self.get_openai_full_result(META_PROMPT, blog)
+            meta_description = self.get_openai_full_result(META_PROMPT, blog)
 
-        bubble_body = {
-            "seo_title": self.title.strip(),
-            "content": blog,
-            "frequently_asked_questions": json.loads(faq),
-            "meta_description": meta_description,
-            "project_id": self.project_id,
-            "request_word": self.title or self.keyword or self.title_and_headings,
-            "heading_images_prompt": self.headings,
-            "main_image_url": self.main_image,
-            "header_images_url": self.headings_images,
-        }
-        print (bubble_body)
+            bubble_body = {
+                "seo_title": self.title.strip(),
+                "content": blog,
+                "frequently_asked_questions": json.loads(faq),
+                "meta_description": meta_description,
+                "project_id": self.project_id,
+                "request_word": self.title or self.keyword or self.title_and_headings,
+                "heading_images_prompt": self.headings,
+                "main_image_url": self.main_image,
+                "header_images_url": self.headings_images,
+            }
+            print (bubble_body)
 
 
-        requests.post(
-            "https://rebecca-29449.bubbleapps.io/api/1.1/wf/article",
-            json=bubble_body,
-        )
+            requests.post(
+                "https://rebecca-29449.bubbleapps.io/api/1.1/wf/article",
+                json=bubble_body,
+            )
 
-        return {
-            "message": "Blog generated successfully",
-            "title": self.title or self.keyword or self.title_and_headings,
-            "project_id": self.project_id
-        }
+            return {
+                "message": "Blog generated successfully",
+                "title": self.title or self.keyword or self.title_and_headings,
+                "project_id": self.project_id
+            }
+        except:
+            requests.post(
+                "https://rebecca-29449.bubbleapps.io/api/1.1/wf/generation-fail",
+                json={ "project_id": self.project_id },
+            )
+
+            return {
+                "message": "Blog generation failed",
+                "project_id": self.project_id
+            }
