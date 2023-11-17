@@ -221,13 +221,13 @@ Title should be between 20~100 characters and should be SEO optimized.
 
             blog = self.get_openai_full_result("", system_prompt + prompt)
 
-            blog = '<body' + blog.split('<body')[-1]
+            blog = '<body>' + blog.split('<body>')[-1]
 
-            if len(blog) == 0:
+            if blog == '<body>':
                 # Trigger one time regenerate for empty blog content
                 blog = self.get_openai_full_result("", system_prompt + prompt)
 
-                blog = '<body' + blog.split('<body')[-1]
+                blog = '<body>' + blog.split('<body>')[-1]
 
 
             FAQ_PROMPT = """
@@ -254,7 +254,7 @@ Act as a copywriter and write a clickbait meta description of a minimum of 150 c
 
             meta_description = self.get_openai_full_result(META_PROMPT, blog)
 
-            if len(blog) == 0:
+            if blog == '<body>':
                 raise Exception("Empty content")
 
             bubble_body = {
